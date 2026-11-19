@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-DATA_PATH = ROOT / "dataset" / "Crop_recommendationV2.csv"
+DATA_PATH = ROOT / "dataset" / "crop_details.csv"
 DETAILS_PATH = ROOT / "dataset" / "crop_details.csv"
 
 st.title("🌾 Crop Information")
