@@ -1,4 +1,16 @@
 import os
+import sys
+import streamlit as st
+import pandas as pd
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+sys.path.append(BASE_DIR)
+
+from model.train_model import load_model
+
+model = load_model()
+import os
 import pandas as pd
 import streamlit as st
 
