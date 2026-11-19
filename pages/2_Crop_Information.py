@@ -131,17 +131,30 @@ if matching_crops:
 
         col1, col2, col3 = st.columns(3)
 
-        col1.info(
-            f"🌡️ Temperature\n\n{crop_data['temperature_c']} °C"
-        )
+        # Basic Information
+st.subheader("📋 Basic Information")
 
-        col2.info(
-            f"🌧️ Annual Rainfall\n\n{crop_data['annual_rainfall_mm']} mm"
-        )
+col1, col2, col3 = st.columns(3)
 
-        col3.info(
-            f"💧 Water Requirement\n\n{crop_data['water_requirement']}"
-        )
+col1.metric(
+    "Crop Category",
+    str(crop_data["crop_category"])
+)
+
+col2.metric(
+    "Growing Season",
+    str(crop_data["growing_season"])
+)
+
+col3.metric(
+    "Crop Duration",
+    str(crop_data["crop_duration"])
+)
+
+st.info(
+    "📅 Planting / Season Months: "
+    + str(crop_data["planting_or_season_months"])
+)
 
         st.divider()
 
