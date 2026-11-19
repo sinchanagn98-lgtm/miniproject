@@ -92,7 +92,45 @@ if matching_crops:
         matching_crops
     )
 
-    if st.button("View Crop Information", type="primary"):
+
+            if st.button("View Crop Information", type="primary"):
+
+        crop_data = data[
+            data["crop_name"] == selected_crop
+        ].iloc[0]
+
+        st.divider()
+
+        st.header(f"🌱 {selected_crop}")
+
+        st.success("Crop information found successfully!")
+
+        # Basic Information
+        st.subheader("📋 Basic Information")
+
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric(
+            "Crop Category",
+            str(crop_data["crop_category"])
+        )
+
+        col2.metric(
+            "Growing Season",
+            str(crop_data["growing_season"])
+        )
+
+        col3.metric(
+            "Crop Duration",
+            str(crop_data["crop_duration"])
+        )
+
+        st.info(
+            "📅 Planting / Season Months: "
+            + str(crop_data["planting_or_season_months"])
+        )
+
+        st.divider()
 
         crop_data = data[
             data["crop_name"] == selected_crop
