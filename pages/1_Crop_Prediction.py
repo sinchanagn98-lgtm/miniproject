@@ -1,17 +1,12 @@
-
-import streamlit as st
+import os
 import pandas as pd
+import streamlit as st
 
-from pathlib import Path
-from model.train_model import load_model, FEATURES
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ROOT = Path(__file__).resolve().parents[1]
-DATA_PATH = ROOT / "dataset" / "Crop_recommendationV2.csv"
-
-st.set_page_config(page_title="Crop Prediction", page_icon="🌾")
-
-st.title("🌾 Crop Prediction")
-st.write("Enter your farm details to find suitable crops.")
+DATA_PATH = os.path.join(
+    BASE_DIR, "dataset", "Crop_recommendationV2.csv"
+)
 
 data = pd.read_csv(DATA_PATH)
 model = load_model()
