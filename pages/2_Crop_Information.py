@@ -1,5 +1,4 @@
 
-
 import streamlit as st
 import pandas as pd
 from pathlib import Path
@@ -25,12 +24,6 @@ st.markdown("""
     color: gray;
     font-size: 17px;
 }
-.crop-card {
-    background-color: #F1F8E9;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -55,16 +48,11 @@ DATA_PATH = BASE_DIR / "crop_details.csv"
 def load_data():
     return pd.read_csv(DATA_PATH)
 
-try:
-    if not DATA_PATH.exists():
-        st.error("Crop dataset not found. Please upload crop_details.csv to the main project folder.")
-        st.stop()
-
-    data = load_data()
-
-except Exception as e:
-    st.error(f"Unable to load crop information: {e}")
+if not DATA_PATH.exists():
+    st.error("crop_details.csv not found in the main project folder.")
     st.stop()
+
+data = load_data()
 
 # Search section
 st.subheader("🔍 Search Your Crop")
@@ -76,7 +64,7 @@ search = st.text_input(
 
 crop_list = sorted(data["crop_name"].dropna().unique())
 
-# Filter search results
+# Search filtering
 if search:
     matching_crops = [
         crop for crop in crop_list
@@ -92,8 +80,7 @@ if matching_crops:
         matching_crops
     )
 
-
-            if st.button("View Crop Information", type="primary"):
+    if st.button("View Crop Information", type="primary"):
 
         crop_data = data[
             data["crop_name"] == selected_crop
@@ -125,42 +112,12 @@ if matching_crops:
             str(crop_data["crop_duration"])
         )
 
-        st.info(
-            "📅 Planting / Season Months: "
-            + str(crop_data["planting_or_season_months"])
-        )
-
-        st.divider()
-
-        crop_data = data[
-            data["crop_name"] == selected_crop
-        ].iloc[0]
-
-        st.divider()
-
-        st.header(f"🌱 {selected_crop}")
-
-        st.success("Crop information found successfully!")
-
-        # Basic information
-        st.subheader("📋 Basic Information")
-
-        col1, col2, col3 = st.columns(3)
-
-        col1.metric(
-            "Crop Category",
-            str(crop_data["crop_category"])
-        )
-
-        col2.metric(
-            "Growing Season",
-            str(crop_data["growing_season"])
-        )
-
-        col3.metric(
-            "Crop Duration",
-            str(crop_data["crop_duration"])
-        )
+        # Planting months
+        if "planting_or_season_months" in data.columns:
+            st.info(
+                "📅 Planting / Season Months: "
+                + str(crop_data["planting_or_season_months"])
+            )
 
         st.divider()
 
@@ -169,60 +126,45 @@ if matching_crops:
 
         col1, col2, col3 = st.columns(3)
 
-        # Basic Information
-st.subheader("📋 Basic Information")
+        col1.metric(
+            "Temperature",
+            str(crop_data["temperature_c"]) + " °C"
+        )
 
-col1, col2, col3 = st.columns(3)
+        col2.metric(
+            "Annual Rainfall",
+            str(crop_data["annual_rainfall_mm"]) + " mm"
+        )
 
-col1.metric(
-    "Crop Category",
-    str(crop_data["crop_category"])
-)
-
-col2.metric(
-    "Growing Season",
-    str(crop_data["growing_season"])
-)
-
-col3.metric(
-    "Crop Duration",
-    str(crop_data["crop_duration"])
-)
-
-st.info(
-    "📅 Planting / Season Months: "
-    + str(crop_data["planting_or_season_months"])
-)
+        col3.metric(
+            "Water Requirement",
+            str(crop_data["water_requirement"])
+        )
 
         st.divider()
 
         # Soil details
         st.subheader("🌍 Soil Requirements")
-
         st.write(crop_data["suitable_soil"])
 
         # Cultivation states
         st.subheader("📍 Major Growing States in India")
-
         st.write(crop_data["major_growing_states_india"])
 
         st.divider()
 
         # Fertilizer details
         st.subheader("🧪 Fertilizer Requirements")
-
         st.write(crop_data["fertilizer_guidance"])
 
         # Irrigation details
         st.subheader("🚿 Irrigation Methods")
-
         st.write(crop_data["irrigation_guidance"])
 
         st.divider()
 
         # Crop uses
         st.subheader("🛒 Uses of the Crop")
-
         st.write(crop_data["major_uses"])
 
         st.balloons()
