@@ -3,6 +3,21 @@ import sys
 import streamlit as st
 import pandas as pd
 
+FEATURES = [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall",
+    "soil_moisture",
+    "soil_type",
+    "sunlight_exposure",
+    "wind_speed",
+    "organic_matter"
+]
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.append(BASE_DIR)
