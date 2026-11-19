@@ -1,1 +1,4 @@
 
+date,location,temperature,humidity,rainfall,weather_condition
+2026-01-01,Mysuru,25,70,10,Cloudy
+
