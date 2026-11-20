@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "crop_details.csv"
 IMAGE_PATH = BASE_DIR / "crop_banner.png"
 
-# Custom styling
+# CSS DESIGN
 st.markdown("""
 <style>
 .stApp {
@@ -22,25 +22,29 @@ st.markdown("""
 }
 
 .block-container {
+    max-width: 1100px;
     padding-top: 3rem;
     padding-bottom: 3rem;
-    max-width: 1100px;
 }
 
-h1 {
+.main-title {
     color: #2e963e;
     text-align: center;
+    font-size: 42px;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
 .subtitle {
-    text-align: center;
     color: #aaaaaa;
+    text-align: center;
     font-size: 18px;
     margin-bottom: 35px;
 }
 
-.search-heading {
-    font-size: 27px;
+.search-title {
+    color: white;
+    font-size: 30px;
     font-weight: bold;
     margin-top: 35px;
     margin-bottom: 20px;
@@ -53,33 +57,44 @@ div.stButton > button {
     border: none;
     padding: 12px 25px;
     font-size: 17px;
+    font-weight: bold;
 }
 
 div.stButton > button:hover {
     background-color: #18752d;
     color: white;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
-# Heading
-st.title("🌾 Indian Crop Information System")
-
+# MAIN HEADING
 st.markdown(
-    '<p class="subtitle">Explore detailed information about crops grown in India</p>',
+    '<div class="main-title">🌾 Indian Crop Information System</div>',
     unsafe_allow_html=True
 )
 
-# Agricultural banner
-if IMAGE_PATH.exists():
-    st.image(IMAGE_PATH, use_container_width=True)
-else:
-    st.warning("Please upload crop_banner.png to your main project folder.")
-
-st.markdown("<br>", unsafe_allow_html=True)
-
 st.markdown(
-    '<div class="search-heading">🔍 Search Your Crop</div>',
+    '<div class="subtitle">Explore detailed information about crops grown in India</div>',
+    unsafe_allow_html=True
+)
+
+# AGRICULTURE IMAGE
+if IMAGE_PATH.exists():
+    st.image(
+        str(IMAGE_PATH),
+        use_container_width=True
+    )
+else:
+    st.info("Upload crop_banner.png to the main project folder.")
+
+# SPACE
+st.write("")
+st.write("")
+
+# SEARCH SECTION
+st.markdown(
+    '<div class="search-title">🔍 Search Your Crop</div>',
     unsafe_allow_html=True
 )
 
@@ -103,15 +118,16 @@ try:
         data[crop_column].dropna().astype(str).unique()
     )
 
-    # Single searchable menu
+    # ONLY ONE SEARCH MENU
     selected_crop = st.selectbox(
         "Search or select a crop",
-        options=crop_names,
+        crop_names,
         index=None,
         placeholder="Type or select a crop name..."
     )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("")
+    st.write("")
 
     if st.button("🌱 View Crop Information"):
 
@@ -133,9 +149,14 @@ try:
 except FileNotFoundError:
     st.error("crop_details.csv file not found.")
 
-st.markdown("<br><br>", unsafe_allow_html=True)
+# FOOTER
+st.write("")
+st.write("")
 st.divider()
 
-st.caption(
+st.markdown(
+    "<center style='color:gray;'>"
     "🌱 Indian Crop Information System | AI-Based Crop Prediction Project"
+    "</center>",
+    unsafe_allow_html=True
 )
