@@ -1,0 +1,121 @@
+City,Month,Temperature_C,Humidity_Percent,Rainfall_mm,Weather,Season
+Bengaluru,January,16,45,2,Sunny,Winter
+Bengaluru,February,18,45,5,Sunny,Winter
+Bengaluru,March,23,46,15,Sunny,Summer
+Bengaluru,April,26,49,45,Partly Cloudy,Summer
+Bengaluru,May,28,54,110,Cloudy,Summer
+Bengaluru,June,24,52,90,Cloudy,Monsoon
+Bengaluru,July,24,54,110,Cloudy,Monsoon
+Bengaluru,August,24,57,140,Cloudy,Monsoon
+Bengaluru,September,24,59,170,Cloudy,Monsoon
+Bengaluru,October,22,58,150,Cloudy,Post-Monsoon
+Bengaluru,November,22,50,60,Partly Cloudy,Post-Monsoon
+Bengaluru,December,16,46,15,Sunny,Winter
+Mysuru,January,17,45,2,Sunny,Winter
+Mysuru,February,19,45,5,Sunny,Winter
+Mysuru,March,25,46,10,Sunny,Summer
+Mysuru,April,28,48,35,Partly Cloudy,Summer
+Mysuru,May,30,52,90,Cloudy,Summer
+Mysuru,June,26,52,80,Cloudy,Monsoon
+Mysuru,July,26,53,100,Cloudy,Monsoon
+Mysuru,August,26,54,110,Cloudy,Monsoon
+Mysuru,September,26,56,130,Cloudy,Monsoon
+Mysuru,October,24,55,120,Cloudy,Post-Monsoon
+Mysuru,November,24,49,45,Partly Cloudy,Post-Monsoon
+Mysuru,December,17,46,10,Sunny,Winter
+Mumbai,January,20,45,1,Sunny,Winter
+Mumbai,February,22,45,1,Sunny,Winter
+Mumbai,March,28,45,1,Sunny,Summer
+Mumbai,April,31,45,5,Sunny,Summer
+Mumbai,May,33,47,20,Sunny,Summer
+Mumbai,June,28,87,500,Rainy,Monsoon
+Mumbai,July,28,95,800,Rainy,Monsoon
+Mumbai,August,28,89,530,Rainy,Monsoon
+Mumbai,September,28,72,320,Rainy,Monsoon
+Mumbai,October,26,52,90,Cloudy,Post-Monsoon
+Mumbai,November,26,47,20,Sunny,Post-Monsoon
+Mumbai,December,20,45,5,Sunny,Winter
+Delhi,January,7,47,20,Sunny,Winter
+Delhi,February,9,47,25,Partly Cloudy,Winter
+Delhi,March,35,46,15,Sunny,Summer
+Delhi,April,38,46,10,Sunny,Summer
+Delhi,May,40,47,20,Sunny,Summer
+Delhi,June,26,52,80,Cloudy,Monsoon
+Delhi,July,26,60,180,Cloudy,Monsoon
+Delhi,August,26,59,170,Cloudy,Monsoon
+Delhi,September,26,54,110,Cloudy,Monsoon
+Delhi,October,24,47,20,Sunny,Post-Monsoon
+Delhi,November,24,45,5,Sunny,Post-Monsoon
+Delhi,December,7,46,10,Sunny,Winter
+Chennai,January,22,47,25,Partly Cloudy,Winter
+Chennai,February,24,46,10,Sunny,Winter
+Chennai,March,31,46,15,Sunny,Summer
+Chennai,April,34,47,20,Sunny,Summer
+Chennai,May,36,48,35,Partly Cloudy,Summer
+Chennai,June,31,50,55,Partly Cloudy,Monsoon
+Chennai,July,31,52,90,Cloudy,Monsoon
+Chennai,August,31,55,120,Cloudy,Monsoon
+Chennai,September,31,57,140,Cloudy,Monsoon
+Chennai,October,29,70,300,Rainy,Post-Monsoon
+Chennai,November,29,74,350,Rainy,Post-Monsoon
+Chennai,December,22,57,140,Cloudy,Winter
+Hyderabad,January,18,45,5,Sunny,Winter
+Hyderabad,February,20,45,5,Sunny,Winter
+Hyderabad,March,31,46,10,Sunny,Summer
+Hyderabad,April,34,47,20,Sunny,Summer
+Hyderabad,May,36,48,35,Partly Cloudy,Summer
+Hyderabad,June,29,54,110,Cloudy,Monsoon
+Hyderabad,July,29,59,170,Cloudy,Monsoon
+Hyderabad,August,29,60,180,Cloudy,Monsoon
+Hyderabad,September,29,58,150,Cloudy,Monsoon
+Hyderabad,October,27,51,70,Partly Cloudy,Post-Monsoon
+Hyderabad,November,27,47,20,Sunny,Post-Monsoon
+Hyderabad,December,18,45,5,Sunny,Winter
+Kolkata,January,18,46,15,Sunny,Winter
+Kolkata,February,20,47,25,Partly Cloudy,Winter
+Kolkata,March,30,48,35,Partly Cloudy,Summer
+Kolkata,April,33,49,50,Partly Cloudy,Summer
+Kolkata,May,35,57,140,Cloudy,Summer
+Kolkata,June,28,69,290,Rainy,Monsoon
+Kolkata,July,28,74,350,Rainy,Monsoon
+Kolkata,August,28,73,340,Rainy,Monsoon
+Kolkata,September,28,70,300,Rainy,Monsoon
+Kolkata,October,26,58,150,Cloudy,Post-Monsoon
+Kolkata,November,26,47,25,Partly Cloudy,Post-Monsoon
+Kolkata,December,18,46,10,Sunny,Winter
+Pune,January,12,45,1,Sunny,Winter
+Pune,February,14,45,1,Sunny,Winter
+Pune,March,30,45,3,Sunny,Summer
+Pune,April,33,46,10,Sunny,Summer
+Pune,May,35,48,30,Partly Cloudy,Summer
+Pune,June,26,56,130,Cloudy,Monsoon
+Pune,July,26,61,190,Cloudy,Monsoon
+Pune,August,26,56,130,Cloudy,Monsoon
+Pune,September,26,55,120,Cloudy,Monsoon
+Pune,October,24,51,70,Partly Cloudy,Post-Monsoon
+Pune,November,24,47,20,Sunny,Post-Monsoon
+Pune,December,12,45,5,Sunny,Winter
+Jaipur,January,8,45,5,Sunny,Winter
+Jaipur,February,10,45,5,Sunny,Winter
+Jaipur,March,36,45,5,Sunny,Summer
+Jaipur,April,39,45,5,Sunny,Summer
+Jaipur,May,41,46,15,Sunny,Summer
+Jaipur,June,26,50,60,Partly Cloudy,Monsoon
+Jaipur,July,26,60,180,Cloudy,Monsoon
+Jaipur,August,26,58,160,Cloudy,Monsoon
+Jaipur,September,26,51,70,Partly Cloudy,Monsoon
+Jaipur,October,24,46,15,Sunny,Post-Monsoon
+Jaipur,November,24,45,3,Sunny,Post-Monsoon
+Jaipur,December,8,45,3,Sunny,Winter
+Thiruvananthapuram,January,23,47,20,Sunny,Winter
+Thiruvananthapuram,February,25,47,25,Partly Cloudy,Winter
+Thiruvananthapuram,March,27,49,50,Partly Cloudy,Summer
+Thiruvananthapuram,April,30,55,120,Cloudy,Summer
+Thiruvananthapuram,May,32,63,220,Rainy,Summer
+Thiruvananthapuram,June,30,70,300,Rainy,Monsoon
+Thiruvananthapuram,July,30,63,220,Rainy,Monsoon
+Thiruvananthapuram,August,30,58,160,Cloudy,Monsoon
+Thiruvananthapuram,September,30,60,180,Cloudy,Monsoon
+Thiruvananthapuram,October,28,68,280,Rainy,Post-Monsoon
+Thiruvananthapuram,November,28,60,180,Cloudy,Post-Monsoon
+Thiruvananthapuram,December,23,50,60,Partly Cloudy,Winter
