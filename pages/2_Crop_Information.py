@@ -136,13 +136,70 @@ try:
                 data[crop_column].astype(str) == selected_crop
             ]
 
-            st.subheader(f"🌾 {selected_crop}")
 
-            for column in crop_info.columns:
-                if column != crop_column:
-                    st.markdown(
-                        f"**{column}:** {crop_info.iloc[0][column]}"
-                    )
+
+            
+import html
+
+st.markdown(f"## 🌱 {selected_crop}")
+
+# Card design
+st.markdown("""
+<style>
+.info-card {
+    background: #262923;
+    border: 1px solid #3c4938;
+    border-radius: 15px;
+    padding: 22px;
+    margin-bottom: 15px;
+    min-height: 110px;
+    transition: 0.3s;
+}
+
+.info-card:hover {
+    border-color: #35a64b;
+    background: #30382e;
+}
+
+.info-title {
+    color: #70c77b;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.info-value {
+    color: white;
+    font-size: 19px;
+    font-weight: 600;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Get crop details
+crop_row = crop_info.iloc[0]
+
+# Display information in two-column cards
+details = [
+    (column, crop_row[column])
+    for column in crop_info.columns
+    if column != crop_column and pd.notna(crop_row[column])
+]
+
+columns = st.columns(2)
+
+for index, (column, value) in enumerate(details):
+    with columns[index % 2]:
+        title = html.escape(str(column))
+        content = html.escape(str(value))
+
+        st.markdown(f"""
+        <div class="info-card">
+            <div class="info-title">🌿 {title}</div>
+            <div class="info-value">{content}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
         else:
             st.warning("Please select a crop.")
 
