@@ -17,12 +17,19 @@ st.write(
 if DETAILS_PATH.exists():
 
     details = pd.read_csv(DETAILS_PATH)
+    
+    if "crop_name" in details.columns:
+    crop_column = "crop_name"
+elif "crop" in details.columns:
+    crop_column = "crop"
+else:
+    st.error("Crop name column is missing.")
+    st.write("Available columns:", details.columns.tolist())
+    st.stop()
 
-    if "crop" not in details.columns:
-        st.error("The crop column is missing.")
-        st.stop()
+crops = details[crop_column].dropna().astype(str).tolist()
 
-    crops = details["crop"].dropna().tolist()
+    
 
     default_crop = st.session_state.get(
         "selected_crop",
