@@ -92,7 +92,7 @@ API_KEY = ""
 
 try:
     API_KEY = st.secrets.get(
-        "OPENWEATHER_API_KEY", ""
+        "cf5cf2ef3455d405dd3a3146d0f1c015", ""
     )
 
     if API_KEY:
@@ -100,6 +100,8 @@ try:
 
 except Exception:
     API_KEY = ""
+
+st.write("API key detected:", bool(API_KEY))
 
 # ----------------------------------
 # FETCH LIVE WEATHER
