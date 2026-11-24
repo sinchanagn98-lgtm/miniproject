@@ -229,8 +229,6 @@ if weather_df is not None:
 
             st.bar_chart(rainfall_chart)
 
-        else:
-            st.warning("No monthly information available for this city.")
 
     st.info(
         "Note: Monthly CSV values are illustrative sample data, "
