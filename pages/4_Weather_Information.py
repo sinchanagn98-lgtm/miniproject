@@ -6,6 +6,7 @@ import requests
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
+# Page configuration
 st.set_page_config(
     page_title="Weather Information",
     page_icon="🌦️",
@@ -13,12 +14,15 @@ st.set_page_config(
 )
 
 st.title("🌦️ Weather Information")
-st.write("Live weather updates and monthly weather information for Indian cities.")
+st.write(
+    "Live weather updates and monthly weather "
+    "information for Indian cities."
+)
 
 # Find project folder
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Support both possible CSV locations
+# CSV file locations
 paths = [
     BASE_DIR / "dataset" / "weather_data.csv",
     BASE_DIR / "weather_data.csv"
@@ -26,7 +30,7 @@ paths = [
 
 DATA_PATH = next((p for p in paths if p.exists()), None)
 
-# Load monthly CSV dataset
+# Load monthly weather dataset
 weather_df = None
 
 if DATA_PATH:
@@ -35,9 +39,12 @@ if DATA_PATH:
     except Exception as e:
         st.error(f"Unable to read weather CSV: {e}")
 else:
-    st.warning("Monthly weather dataset not found. Check the dataset folder.")
+    st.warning(
+        "Monthly weather dataset not found. "
+        "Please check your dataset folder."
+    )
 
-# Cities
+# Default cities
 default_cities = [
     "Bengaluru", "Mysuru", "Mumbai", "Delhi",
     "Chennai", "Hyderabad", "Kolkata",
@@ -45,23 +52,29 @@ default_cities = [
 ]
 
 if weather_df is not None and "City" in weather_df.columns:
-    cities = sorted(weather_df["City"].dropna().unique().tolist())
+    cities = sorted(
+        weather_df["City"].dropna().unique().tolist()
+    )
 else:
     cities = default_cities
 
+# City selection
 city = st.selectbox("Select Indian City", cities)
 
-# Get API key securely
+# Read API key from Streamlit Cloud Secrets
+API_KEY = ""
+
 try:
-    API_KEY = st.secrets["OPENWEATHER_API_KEY"]
+    API_KEY = st.secrets.get("OPENWEATHER_API_KEY", "")
+    if API_KEY:
+        API_KEY = str(API_KEY).strip()
 except Exception:
     API_KEY = ""
 
-# Fetch live weather
+# Function to fetch live weather
 @st.cache_data(ttl=600)
 def get_live_weather(city_name, api_key):
 
-    # First find city coordinates
     geo_url = "https://api.openweathermap.org/geo/1.0/direct"
 
     geo_response = requests.get(
@@ -75,6 +88,7 @@ def get_live_weather(city_name, api_key):
     )
 
     geo_response.raise_for_status()
+
     geo_data = geo_response.json()
 
     if not geo_data:
@@ -83,7 +97,6 @@ def get_live_weather(city_name, api_key):
     lat = geo_data[0]["lat"]
     lon = geo_data[0]["lon"]
 
-    # Fetch current weather
     weather_url = "https://api.openweathermap.org/data/2.5/weather"
 
     response = requests.get(
@@ -107,16 +120,19 @@ st.divider()
 st.header("🌍 Current Live Weather")
 
 if not API_KEY:
+
     st.error(
         "Weather API key not found. "
-        "Add OPENWEATHER_API_KEY to Streamlit secrets."
+        "Add OPENWEATHER_API_KEY to Streamlit Cloud Secrets."
     )
 
 else:
+
     if st.button("🔄 Refresh Live Weather"):
         get_live_weather.clear()
 
     try:
+
         data = get_live_weather(city, API_KEY)
 
         temperature = data["main"]["temp"]
@@ -129,64 +145,85 @@ else:
         col1, col2, col3, col4 = st.columns(4)
 
         col1.metric(
-            "Temperature",
+            "🌡️ Temperature",
             f"{temperature} °C"
         )
 
         col2.metric(
-            "Humidity",
+            "💧 Humidity",
             f"{humidity}%"
         )
 
         col3.metric(
-            "Wind Speed",
+            "💨 Wind Speed",
             f"{wind} m/s"
         )
 
         col4.metric(
-            "Rainfall (last hour)",
-            f"{rainfall} mm" if rainfall is not None
-            else "Not reported"
+            "🌧️ Rainfall (last hour)",
+            f"{rainfall} mm"
+            if rainfall is not None else "Not reported"
         )
 
         st.success(
             f"Weather in {city}: {condition.title()}"
         )
 
-        # Display last updated time
+        # Last updated time
         timezone_offset = data.get("timezone", 0)
 
         updated_time = (
-            datetime.fromtimestamp(data["dt"], timezone.utc)
+            datetime.fromtimestamp(
+                data["dt"], timezone.utc
+            )
             + timedelta(seconds=timezone_offset)
         )
 
         st.caption(
-            f"Last weather observation: "
-            f"{updated_time.strftime('%d-%m-%Y %I:%M %p')}"
+            "Last weather observation: "
+            + updated_time.strftime("%d-%m-%Y %I:%M %p")
         )
 
     except requests.exceptions.HTTPError as e:
-        st.error(
-            "Weather API request failed. Check your API key "
-            "and account activation."
-        )
+
+        status_code = e.response.status_code if e.response else None
+
+        if status_code == 401:
+            st.error(
+                "Invalid or inactive OpenWeather API key. "
+                "Check your key and account activation."
+            )
+        elif status_code == 404:
+            st.error("Weather information for this city was not found.")
+        else:
+            st.error(
+                f"Weather API request failed. HTTP status: {status_code}"
+            )
+
     except requests.exceptions.RequestException:
-        st.error("Unable to connect to the weather service.")
+        st.error(
+            "Unable to connect to the weather service. "
+            "Please try again."
+        )
+
     except Exception as e:
         st.error(f"Weather error: {e}")
 
 
-# MONTHLY CSV DATASET SECTION
+# MONTHLY WEATHER INFORMATION
 st.divider()
 st.header("📅 Monthly Weather Information")
 
 if weather_df is not None:
 
     required_columns = [
-        "City", "Month", "Temperature_C",
-        "Humidity_Percent", "Rainfall_mm",
-        "Weather", "Season"
+        "City",
+        "Month",
+        "Temperature_C",
+        "Humidity_Percent",
+        "Rainfall_mm",
+        "Weather",
+        "Season"
     ]
 
     missing = [
@@ -195,9 +232,13 @@ if weather_df is not None:
     ]
 
     if missing:
-        st.error(f"Missing CSV columns: {', '.join(missing)}")
+
+        st.error(
+            f"Missing CSV columns: {', '.join(missing)}"
+        )
 
     else:
+
         city_data = weather_df[
             weather_df["City"].astype(str).str.lower()
             == city.lower()
@@ -213,7 +254,7 @@ if weather_df is not None:
                 hide_index=True
             )
 
-            st.subheader("Monthly Temperature")
+            st.subheader("📈 Monthly Temperature")
 
             chart_data = city_data.set_index("Month")[
                 ["Temperature_C"]
@@ -221,7 +262,7 @@ if weather_df is not None:
 
             st.line_chart(chart_data)
 
-            st.subheader("Monthly Rainfall")
+            st.subheader("🌧️ Monthly Rainfall")
 
             rainfall_chart = city_data.set_index("Month")[
                 ["Rainfall_mm"]
@@ -229,8 +270,7 @@ if weather_df is not None:
 
             st.bar_chart(rainfall_chart)
 
-
-    st.info(
-        "Note: Monthly CSV values are illustrative sample data, "
-        "not official historical weather records."
-    )
+        else:
+            st.warning(
+                f"No monthly weather information available for {city}."
+            )
