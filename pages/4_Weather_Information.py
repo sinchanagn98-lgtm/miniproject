@@ -184,7 +184,25 @@ else:
             + updated_time.strftime("%d-%m-%Y %I:%M %p")
         )
 
-    except requests.exceptions.HTTPError as e:
+
+            except requests.exceptions.HTTPError as e:
+
+        if e.response is not None:
+            st.error(
+                f"OpenWeather error: {e.response.status_code}"
+            )
+            st.write(e.response.text)
+        else:
+            st.error(f"HTTP error details: {str(e)}")
+
+    except requests.exceptions.RequestException as e:
+
+        st.error("Connection problem with OpenWeather.")
+        st.write(str(e))
+
+    except Exception as e:
+
+        st.error(f"Unexpected error: {str(e)}")
 
         status_code = e.response.status_code if e.response else None
 
