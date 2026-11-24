@@ -1,0 +1,85 @@
+
+
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+TRAIN_DIR = BASE_DIR / "dataset" / "train"
+VAL_DIR = BASE_DIR / "dataset" / "validation"
+MODEL_DIR = BASE_DIR / "models"
+
+MODEL_DIR.mkdir(exist_ok=True)
+
+IMG_SIZE = (224, 224)
+BATCH_SIZE = 32
+
+# Load training images
+train_data = tf.keras.utils.image_dataset_from_directory(
+    TRAIN_DIR,
+    image_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    label_mode="categorical"
+)
+
+# Load validation images
+val_data = tf.keras.utils.image_dataset_from_directory(
+    VAL_DIR,
+    image_size=IMG_SIZE,
+    batch_size=BATCH_SIZE,
+    label_mode="categorical"
+)
+
+class_names = train_data.class_names
+print("Disease classes:", class_names)
+
+# Optimize data loading
+train_data = train_data.prefetch(tf.data.AUTOTUNE)
+val_data = val_data.prefetch(tf.data.AUTOTUNE)
+
+# Build CNN model
+model = models.Sequential([
+    layers.Input(shape=(224, 224, 3)),
+
+    layers.Rescaling(1./255),
+
+    layers.Conv2D(32, (3, 3), activation="relu"),
+    layers.MaxPooling2D(),
+
+    layers.Conv2D(64, (3, 3), activation="relu"),
+    layers.MaxPooling2D(),
+
+    layers.Conv2D(128, (3, 3), activation="relu"),
+    layers.MaxPooling2D(),
+
+    layers.Flatten(),
+
+    layers.Dense(128, activation="relu"),
+    layers.Dropout(0.5),
+
+    layers.Dense(len(class_names), activation="softmax")
+])
+
+# Compile model
+model.compile(
+    optimizer="adam",
+    loss="categorical_crossentropy",
+    metrics=["accuracy"]
+)
+
+# Train model
+model.fit(
+    train_data,
+    validation_data=val_data,
+    epochs=10
+)
+
+# Save model
+model.save(MODEL_DIR / "plant_model.keras")
+
+# Save the exact class order for prediction
+with open(MODEL_DIR / "classes.txt", "w") as f:
+    f.write("\n".join(class_names))
+
+print("Model trained and saved successfully!")
