@@ -1,10 +1,10 @@
 
 
+
 import streamlit as st
 import pandas as pd
 import requests
 from pathlib import Path
-from datetime import datetime, timezone, timedelta
 
 # ----------------------------------
 # PAGE CONFIGURATION
@@ -17,6 +17,7 @@ st.set_page_config(
 )
 
 st.title("🌦️ Weather Information")
+
 st.write(
     "Live weather updates and monthly weather "
     "information for Indian cities."
@@ -85,42 +86,62 @@ city = st.selectbox(
 )
 
 # ----------------------------------
-# READ OPENWEATHER API KEY
+# WEATHER CONDITION DESCRIPTION
 # ----------------------------------
 
-API_KEY = ""
+def get_weather_description(code):
 
-try:
-    API_KEY = st.secrets.get(
-        "cf5cf2ef3455d405dd3a3146d0f1c015", ""
-    )
+    descriptions = {
+        0: "Clear Sky",
+        1: "Mainly Clear",
+        2: "Partly Cloudy",
+        3: "Overcast",
+        45: "Fog",
+        48: "Depositing Rime Fog",
+        51: "Light Drizzle",
+        53: "Moderate Drizzle",
+        55: "Dense Drizzle",
+        56: "Freezing Drizzle",
+        57: "Heavy Freezing Drizzle",
+        61: "Slight Rain",
+        63: "Moderate Rain",
+        65: "Heavy Rain",
+        66: "Freezing Rain",
+        67: "Heavy Freezing Rain",
+        71: "Slight Snow",
+        73: "Moderate Snow",
+        75: "Heavy Snow",
+        77: "Snow Grains",
+        80: "Rain Showers",
+        81: "Moderate Rain Showers",
+        82: "Violent Rain Showers",
+        85: "Snow Showers",
+        86: "Heavy Snow Showers",
+        95: "Thunderstorm",
+        96: "Thunderstorm with Hail",
+        99: "Heavy Thunderstorm with Hail"
+    }
 
-    if API_KEY:
-        API_KEY = str(API_KEY).strip()
+    return descriptions.get(code, "Unknown Weather")
 
-except Exception:
-    API_KEY = ""
-
-st.write("API key detected:", bool(API_KEY))
 
 # ----------------------------------
-# FETCH LIVE WEATHER
+# FETCH LIVE WEATHER USING OPEN-METEO
 # ----------------------------------
 
 @st.cache_data(ttl=600)
-def get_live_weather(city_name, api_key):
+def get_live_weather(city_name):
 
-    # Get city coordinates
-    geo_url = (
-        "https://api.openweathermap.org/geo/1.0/direct"
-    )
+    # Find city coordinates
+    geo_url = "https://geocoding-api.open-meteo.com/v1/search"
 
     geo_response = requests.get(
         geo_url,
         params={
-            "q": f"{city_name},IN",
-            "limit": 1,
-            "appid": api_key
+            "name": city_name,
+            "count": 10,
+            "language": "en",
+            "format": "json"
         },
         timeout=20
     )
@@ -129,31 +150,48 @@ def get_live_weather(city_name, api_key):
 
     geo_data = geo_response.json()
 
-    if not geo_data:
-        raise ValueError("City not found.")
+    results = geo_data.get("results", [])
 
-    latitude = geo_data[0]["lat"]
-    longitude = geo_data[0]["lon"]
+    # Prefer the matching city in India
+    indian_results = [
+        item for item in results
+        if item.get("country_code") == "IN"
+    ]
 
-    # Get current weather
-    weather_url = (
-        "https://api.openweathermap.org/data/2.5/weather"
-    )
+    if not indian_results:
+        raise ValueError(
+            f"Could not find {city_name} in India."
+        )
 
-    response = requests.get(
+    location = indian_results[0]
+
+    latitude = location["latitude"]
+    longitude = location["longitude"]
+
+    # Fetch current weather
+    weather_url = "https://api.open-meteo.com/v1/forecast"
+
+    weather_response = requests.get(
         weather_url,
         params={
-            "lat": latitude,
-            "lon": longitude,
-            "appid": api_key,
-            "units": "metric"
+            "latitude": latitude,
+            "longitude": longitude,
+            "current": (
+                "temperature_2m,"
+                "relative_humidity_2m,"
+                "precipitation,"
+                "rain,"
+                "weather_code,"
+                "wind_speed_10m"
+            ),
+            "timezone": "auto"
         },
         timeout=20
     )
 
-    response.raise_for_status()
+    weather_response.raise_for_status()
 
-    return response.json()
+    return weather_response.json()
 
 
 # ----------------------------------
@@ -163,122 +201,71 @@ def get_live_weather(city_name, api_key):
 st.divider()
 st.header("🌍 Current Live Weather")
 
-if not API_KEY:
+if st.button("🔄 Refresh Live Weather"):
+    get_live_weather.clear()
 
-    st.error(
-        "Weather API key not found. "
-        "Add OPENWEATHER_API_KEY to Streamlit Cloud Secrets."
+try:
+
+    data = get_live_weather(city)
+
+    current = data["current"]
+
+    temperature = current["temperature_2m"]
+    humidity = current["relative_humidity_2m"]
+    rainfall = current["precipitation"]
+    wind_speed = current["wind_speed_10m"]
+    weather_code = current["weather_code"]
+
+    condition = get_weather_description(weather_code)
+
+    # Weather cards
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric(
+        "🌡️ Temperature",
+        f"{temperature} °C"
     )
 
-else:
+    col2.metric(
+        "💧 Humidity",
+        f"{humidity}%"
+    )
 
-    if st.button("🔄 Refresh Live Weather"):
-        get_live_weather.clear()
+    col3.metric(
+        "💨 Wind Speed",
+        f"{wind_speed} km/h"
+    )
 
-    try:
+    col4.metric(
+        "🌧️ Precipitation",
+        f"{rainfall} mm"
+    )
 
-        data = get_live_weather(city, API_KEY)
+    st.success(
+        f"Weather in {city}: {condition}"
+    )
 
-        temperature = data["main"]["temp"]
-        humidity = data["main"]["humidity"]
-        condition = data["weather"][0]["description"]
-        wind_speed = data["wind"]["speed"]
+    st.caption(
+        f"Last updated: {current['time']}"
+    )
 
-        rainfall = data.get("rain", {}).get("1h")
+except requests.exceptions.Timeout:
 
-        # Weather information cards
-        col1, col2, col3, col4 = st.columns(4)
+    st.error(
+        "Weather service is taking too long. "
+        "Please try again."
+    )
 
-        col1.metric(
-            "🌡️ Temperature",
-            f"{temperature} °C"
-        )
+except requests.exceptions.RequestException as e:
 
-        col2.metric(
-            "💧 Humidity",
-            f"{humidity}%"
-        )
+    st.error(
+        "Unable to connect to the weather service."
+    )
+    st.write(str(e))
 
-        col3.metric(
-            "💨 Wind Speed",
-            f"{wind_speed} m/s"
-        )
+except Exception as e:
 
-        col4.metric(
-            "🌧️ Rainfall (last hour)",
-            f"{rainfall} mm"
-            if rainfall is not None
-            else "Not reported"
-        )
-
-        st.success(
-            f"Weather in {city}: {condition.title()}"
-        )
-
-        # Last updated time
-        timezone_offset = data.get("timezone", 0)
-
-        updated_time = (
-            datetime.fromtimestamp(
-                data["dt"],
-                timezone.utc
-            )
-            + timedelta(seconds=timezone_offset)
-        )
-
-        st.caption(
-            "Last weather observation: "
-            + updated_time.strftime(
-                "%d-%m-%Y %I:%M %p"
-            )
-        )
-
-    except requests.exceptions.HTTPError as e:
-
-        if e.response is not None:
-
-            status_code = e.response.status_code
-
-            if status_code == 401:
-                st.error(
-                    "Invalid or inactive OpenWeather API key. "
-                    "Check your API key and account activation."
-                )
-
-            elif status_code == 429:
-                st.error(
-                    "API request limit reached. "
-                    "Please try again later."
-                )
-
-            else:
-                st.error(
-                    f"OpenWeather API error: {status_code}"
-                )
-                st.write(e.response.text)
-
-        else:
-            st.error(f"HTTP error: {str(e)}")
-
-    except requests.exceptions.Timeout:
-        st.error(
-            "Weather service is taking too long to respond. "
-            "Please try again."
-        )
-
-    except requests.exceptions.ConnectionError as e:
-        st.error(
-            "Unable to connect to OpenWeather. "
-            "Please check the internet connection."
-        )
-        st.write(str(e))
-
-    except requests.exceptions.RequestException as e:
-        st.error("Weather connection failed.")
-        st.write(str(e))
-
-    except Exception as e:
-        st.error(f"Unexpected weather error: {str(e)}")
+    st.error(f"Weather error: {e}")
 
 
 # ----------------------------------
